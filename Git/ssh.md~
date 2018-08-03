@@ -96,8 +96,4 @@ $ git remote -v
 origin  git@github.com: (fetch)
 origin  git@github.com: (push)
 ```
-これで、パスワード入力なしで`push`できるようになったはず。<br>
-これでもエラーが出る場合は以下のようにもう一度設定し直すといい。<br>
-```
-$ git remote set-url origin git:YuiWashizu/[リポジトリ名].git
-```
+これで、パスワード入力なしで`push`できるようになったはず。
