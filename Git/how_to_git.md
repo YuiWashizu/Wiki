@@ -46,6 +46,9 @@ $ ls -a
 ```
 `git init`で作業ディレクトリtest_repoに対応するローカルリポジトリが作成される.`ls -a `コマンドで.gitのディレクトリが作成されていることが確認できればOK.<br>
 今回はディレクトリtest_repo内で、testcode.pyを作成し、それをGitHubにあげることで、Gitの基本的な使い方を確認する.
+
+### Gitにコードを上げる
+ローカルリポジトリで開発したものをリモートリポジトリに反映させる.
 ```
 $ ls 
 testcode.py
@@ -75,7 +78,7 @@ remote: Resolving deltas: 100% (1/1), completed with 1 local object.
 To https://YuiWashizu@github.com/YuiWashizu/test-repo.git
    ff6b8ec..07dc36f  master -> master
 ```
-ちなみに、`git push`の時に
+大丈夫そう. ちなみに、`git push`の時に
 ```
 $ git push -u origin master
 ```
@@ -90,10 +93,6 @@ $ cd .ssh
 ```
 で鍵を入れるディレクトリに移動<br>
 鍵の生成は以下のよう<br>
-```:input
-$ ssh-keygen -t rsa
-```
-
 ```
 $ ssh-keygen -t rsa
 Generating public/private rsa key pair.
@@ -101,10 +100,10 @@ Enter file in which to save the key (/Users/(username)/.ssh/id_rsa):
 Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
 ```
-
-output関しては、全てEnterキーを押すのでOK<br>
+いくつか要求されるが、全てエンター何も入力せずにキーを押すのでOK<br>
 id_rsaとid_rsa_pubの2つの鍵が生成される<br>
 1度生成したことがある場合、2度目からは上書きされてしまうので注意する<br>
+（`Enter file in which to save the key (/Users/(username)/.ssh/id_rsa):`のところで、鍵の名前をつけられるので、そこで名付けておくと上書きされない.）
 - id_rsa：秘密鍵
 - id_rsa_pub：公開鍵
 ```
