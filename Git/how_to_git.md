@@ -120,7 +120,7 @@ $ pbcopy < ~/.ssh/id_rsa.pub
 
 ### GitHubに公開鍵を登録
 以下のリンクから公開鍵の設定ができる<br>
-[Sign in to GitHub · GitHub](https://github.com/settings/ssh)
+[Sign in to GitHub · GitHub](https://github.com/settings/ssh)<br>
 画面右上の「Add SSH Key」をクリック<br>
 
 「title」に公開鍵名、「key」に公開鍵の中身を入れて「Add Key」をクリック<br>
