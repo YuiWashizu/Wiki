@@ -83,4 +83,43 @@
   - TNtuple：基本的に数字のみ扱う.
   - TTree：数字だけでなく, 色々な情報（文字列, STL container, TObject, ...）を保持できる
   
-  言葉の定義は, 縦の項目を
+  言葉の定義は, 縦の項目をBranch, 一行のかたまりをEntryという. 実際にこのテーブルを表現するTTreeを作る.
+  ```
+  void makeTree1()
+{
+  // 表の値を扱いやすいように配列に格納しておく
+  const Int_t nentries = 5;
+  Int_t    a_ntracks[nentries]  = {0, 1, 2, 3, 4};                          // 荷電粒子の軌跡No.
+  Double_t a_momentum[nentries] = {3200.4, 2893.2, 3603.9, 9899.1, 5674.3}; // 運動量[MeV]
+  Double_t a_position[nentries] = {7643, 9834, 11232, 10232, 8092};         // 座標 z [mm]
+  Int_t    a_charge[nentries]   = {-1, 1, 1, -1, 1};                        // 電荷
+ 
+  // ROOTファイルとTTreeを作成
+  TFile *file = TFile::Open("tree.root", "RECREATE");
+  TTree *tree = new TTree("tree", "tree");
+ 
+  // Branchに対応する変数を作成
+  Int_t    ntracks;
+  Double_t momentum;
+  Double_t position;
+  Int_t    charge;
+ 
+  // Branch関数で変数のアドレスをTTreeにセット
+  tree->Branch("ntracks",  &ntracks,  "ntracks/I");
+  tree->Branch("momentum", &momentum, "momentum/D");
+  tree->Branch("position", &position, "position/D");
+  tree->Branch("charge",   &charge,   "charge/I");
+ 
+  // 配列から値を取得、TTreeをFill
+  for (Int_t ii = 0; ii < nentries; ii++) {
+    ntracks  = a_ntracks[ii];
+    momentum = a_momentum[ii];
+    position = a_position[ii];
+    charge   = a_charge[ii];
+    tree->Fill();
+  }
+ 
+  // ファイルに保存
+  tree->Write();
+  file->Close();
+}
