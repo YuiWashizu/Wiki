@@ -86,42 +86,69 @@
   言葉の定義は, 縦の項目をBranch, 一行のかたまりをEntryという. 実際にこのテーブルを表現するTTreeを作る.
   ```
   void makeTree1()
-{
-  // 表の値を扱いやすいように配列に格納しておく
-  const Int_t nentries = 5;
-  Int_t    a_ntracks[nentries]  = {0, 1, 2, 3, 4};                          // 荷電粒子の軌跡No.
-  Double_t a_momentum[nentries] = {3200.4, 2893.2, 3603.9, 9899.1, 5674.3}; // 運動量[MeV]
-  Double_t a_position[nentries] = {7643, 9834, 11232, 10232, 8092};         // 座標 z [mm]
-  Int_t    a_charge[nentries]   = {-1, 1, 1, -1, 1};                        // 電荷
+  {
+    // 表の値を扱いやすいように配列に格納しておく
+    const Int_t nentries = 5;
+    Int_t    a_ntracks[nentries]  = {0, 1, 2, 3, 4};                          // 荷電粒子の軌跡No.
+    Double_t a_momentum[nentries] = {3200.4, 2893.2, 3603.9, 9899.1, 5674.3}; // 運動量[MeV]
+    Double_t a_position[nentries] = {7643, 9834, 11232, 10232, 8092};         // 座標 z [mm]
+    Int_t    a_charge[nentries]   = {-1, 1, 1, -1, 1};                        // 電荷
+   
+    // ROOTファイルとTTreeを作成
+    TFile *file = TFile::Open("tree.root", "RECREATE");
+    TTree *tree = new TTree("tree", "tree");
  
-  // ROOTファイルとTTreeを作成
-  TFile *file = TFile::Open("tree.root", "RECREATE");
-  TTree *tree = new TTree("tree", "tree");
+    // Branchに対応する変数を作成
+    Int_t    ntracks;
+    Double_t momentum;
+    Double_t position;
+    Int_t    charge;
+  
+    // Branch関数で変数のアドレスをTTreeにセット
+    tree->Branch("ntracks",  &ntracks,  "ntracks/I");
+    tree->Branch("momentum", &momentum, "momentum/D");
+    tree->Branch("position", &position, "position/D");
+    tree->Branch("charge",   &charge,   "charge/I");
  
-  // Branchに対応する変数を作成
-  Int_t    ntracks;
-  Double_t momentum;
-  Double_t position;
-  Int_t    charge;
+    // 配列から値を取得、TTreeをFill
+    for (Int_t ii = 0; ii < nentries; ii++) {
+      ntracks  = a_ntracks[ii];
+      momentum = a_momentum[ii];
+      position = a_position[ii];
+      charge   = a_charge[ii];
+      tree->Fill();
+    }
  
-  // Branch関数で変数のアドレスをTTreeにセット
-  tree->Branch("ntracks",  &ntracks,  "ntracks/I");
-  tree->Branch("momentum", &momentum, "momentum/D");
-  tree->Branch("position", &position, "position/D");
-  tree->Branch("charge",   &charge,   "charge/I");
- 
-  // 配列から値を取得、TTreeをFill
-  for (Int_t ii = 0; ii < nentries; ii++) {
-    ntracks  = a_ntracks[ii];
-    momentum = a_momentum[ii];
-    position = a_position[ii];
-    charge   = a_charge[ii];
-    tree->Fill();
+    // ファイルに保存
+    tree->Write();
+    file->Close();
   }
- 
-  // ファイルに保存
-  tree->Write();
-  file->Close();
-}
-```
-Branch関数でBranchを作成し, それに対応する変数のアドレスをセットしている. TTreeのFill()が呼ばれると、 その時の変数の値がTTreeのEntryとして増えていく. 最後にTTreeのファイルを書いて, ファイルを閉じて, 実行すると, 中身を確認できる.
+  ```
+  Branch関数でBranchを作成し, それに対応する変数のアドレスをセットしている. TTreeのFill()が呼ばれると、 その時の変数の値がTTreeのEntryとして増えてい  く. 最後にTTreeのファイルを書いて, ファイルを閉じて, 実行すると, 中身を確認できる.
+  
+  ```
+  [ppccuser@ppcc ~]$ root -l makeTree1.cpp
+  [ppccuser@ppcc ~]$ root -l tree.root
+  root [0]
+  Attaching file tree.root as _file0...
+  (class TFile *) 0x27abb20
+  root [1] .ls                            # メモリ上にあるオブジェクトを確認する, "tree"というTTreeが存在する
+  TFile**        tree.root  
+  TFile*        tree.root   
+  KEY: TTree    tree;1    tree
+  root [2] tree->GetEntries()             # 何エントリーあるかを確認する　　　　　　　　　　　　　　　　
+  (Long64_t) 5
+  root [3] tree->Scan()                   # TTreeの中身を表示する、テーブルが再現できている
+  ************************************************************
+  *    Row   *   ntracks *  momentum *  position *    charge *
+  ************************************************************
+  *        0 *         0 *    3200.4 *      7643 *        -1 *
+  *        1 *         1 *    2893.2 *      9834 *         1 *
+  *        2 *         2 *    3603.9 *     11232 *         1 *
+  *        3 *         3 *    9899.1 *     10232 *        -1 *
+  *        4 *         4 *    5674.3 *      8092 *         1 *
+  ************************************************************
+  (Long64_t) 5
+  root [4] tree->Draw("momentum")         # "momentum"をヒストグラムとして描画する  
+  ```
+  今回は各Entryそれぞれの配列に記述している. しかし, 実際には多くのEntry数を扱う場合に現実的ではないので, 何かデータを読み込む仕組みをプログラミングする必要がある. 例えば, テキストファイルにデータ保存されている場合には
